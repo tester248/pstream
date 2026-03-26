@@ -11,8 +11,7 @@ export async function scrapeViaFedApi(
     update: (evt: { id: string; status: string; percentage: number; reason?: string; error?: any; }) => void;
   }
 ): Promise<RunOutput | null> {
-  const febboxToken = useAuthStore.getState().febboxToken;
-  if (!febboxToken || !conf().ALLOW_FEBBOX_KEY) return null;
+  if (!conf().ALLOW_FEBBOX_KEY) return null;
 
   const apiUrl = conf().FEBBOX_API_URL;
   if (!apiUrl) return null;
@@ -39,9 +38,6 @@ export async function scrapeViaFedApi(
 
     const response = await fetch(url.toString(), {
       method: "GET",
-      headers: {
-        "x-auth-cookie": febboxToken,
-      },
       // Ensure we don't cache this aggressively
       cache: "no-store", 
     });

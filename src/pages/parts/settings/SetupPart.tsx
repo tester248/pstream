@@ -19,75 +19,16 @@ import { Heading3 } from "@/components/utils/Text";
 import { conf } from "@/setup/config";
 import { useAuthStore } from "@/stores/auth";
 
-export async function testFebboxToken(
-  febboxToken: string | null,
-): Promise<Status> {
-  if (!febboxToken) {
-    return "unset";
-  }
+export type Status = "success" | "unset" | "error";
 
-  const febboxApiTestUrl = `${conf().FEBBOX_API_URL}/api/febbox/stream?type=movie&title=Inception&releaseYear=2010`;
-
-  let attempts = 0;
-  const maxAttempts = 3;
-
-  while (attempts < maxAttempts) {
-    console.log(
-      `Attempt ${attempts + 1} of ${maxAttempts} to check Febbox token`,
-    );
-    try {
-      const response = await fetch(febboxApiTestUrl, {
-        headers: {
-          "x-auth-cookie": febboxToken,
-        },
-      });
-
-      if (!response.ok) {
-        console.error("Febbox API test failed with status:", response.status);
-        attempts += 1;
-        if (attempts === maxAttempts) {
-          console.log("Max attempts reached, returning error");
-          return "error";
-        }
-        console.log("Retrying after failed response...");
-        await sleep(3000);
-        continue;
-      }
-
-      const data = (await response.json()) as any;
-      if (!data || !data.links || data.links.length === 0) {
-        console.error("Invalid response format from Febbox API:", data);
-        attempts += 1;
-        if (attempts === maxAttempts) {
-          console.log("Max attempts reached, returning error");
-          return "error";
-        }
-        console.log("Retrying after invalid response format...");
-        await sleep(3000);
-        continue;
-      }
-
-      console.log("Valid links found, returning success");
-      return "success";
-    } catch (error: any) {
-      console.error("Error testing Febbox token:", error);
-      attempts += 1;
-      if (attempts === maxAttempts) {
-        console.log("Max attempts reached, returning error");
-        return "error";
-      }
-      console.log("Retrying after error...");
-      await sleep(3000);
-    }
-  }
-
-  console.log("All attempts exhausted, returning error");
-  return "error";
-}
+type SetupData = {
+  extension: Status;
+  proxy: Status;
+  defaultProxy: Status;
+};
 
 function useIsSetup() {
   const proxyUrls = useAuthStore((s) => s.proxySet);
-  const febboxToken = useAuthStore((s) => s.febboxToken);
   const { loading, value } = useAsync(async (): Promise<SetupData> => {
     const extensionStatus: Status = (await isExtensionActive())
       ? "success"
@@ -102,17 +43,12 @@ function useIsSetup() {
       }
     }
 
-    const febboxTokenStatus: Status = await testFebboxToken(febboxToken);
-
     return {
       extension: extensionStatus,
       proxy: proxyStatus,
       defaultProxy: "success",
-      ...(conf().ALLOW_FEBBOX_KEY && {
-        febboxTokenTest: febboxTokenStatus,
-      }),
     };
-  }, [proxyUrls, febboxToken]);
+  }, [proxyUrls]);
 
   let globalState: Status = "unset";
   if (

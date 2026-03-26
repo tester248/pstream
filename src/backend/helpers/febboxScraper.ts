@@ -1,14 +1,13 @@
-import { RunOutput, ScrapeMedia } from "@movie-web/providers";
+import { RunOutput, ScrapeMedia, FullScraperEvents } from "@movie-web/providers";
 
-import { useAuthStore } from "@/stores/auth";
 import { conf } from "@/setup/config";
 
 export async function scrapeViaFedApi(
   media: ScrapeMedia,
   events?: {
-    init: (evt: { sourceIds: string[] }) => void;
-    start: (id: string) => void;
-    update: (evt: { id: string; status: string; percentage: number; reason?: string; error?: any; }) => void;
+    init: NonNullable<FullScraperEvents["init"]>;
+    start: NonNullable<FullScraperEvents["start"]>;
+    update: NonNullable<FullScraperEvents["update"]>;
   }
 ): Promise<RunOutput | null> {
   if (!conf().ALLOW_FEBBOX_KEY) return null;

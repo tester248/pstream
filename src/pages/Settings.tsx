@@ -131,8 +131,7 @@ export function SettingsPage() {
   const backendUrlSetting = useAuthStore((s) => s.backendUrl);
   const setBackendUrl = useAuthStore((s) => s.setBackendUrl);
 
-  const febboxToken = useAuthStore((s) => s.febboxToken);
-  const setFebboxToken = useAuthStore((s) => s.setFebboxToken);
+
 
   const enableThumbnails = usePreferencesStore((s) => s.enableThumbnails);
   const setEnableThumbnails = usePreferencesStore((s) => s.setEnableThumbnails);
@@ -180,10 +179,7 @@ export function SettingsPage() {
   useEffect(() => {
     const loadSettings = async () => {
       if (account && backendUrl) {
-        const settings = await getSettings(backendUrl, account);
-        if (settings.febboxKey) {
-          setFebboxToken(settings.febboxKey);
-        }
+        await getSettings(backendUrl, account);
       }
     };
     loadSettings();
@@ -195,8 +191,6 @@ export function SettingsPage() {
     subStyling,
     decryptedName,
     proxySet,
-    backendUrlSetting,
-    febboxToken,
     account ? account.profile : undefined,
     enableThumbnails,
     enableAutoplay,
@@ -248,14 +242,12 @@ export function SettingsPage() {
       if (
         state.appLanguage.changed ||
         state.theme.changed ||
-        state.proxyUrls.changed ||
-        state.febboxToken.changed
+        state.proxyUrls.changed
       ) {
         await updateSettings(backendUrl, account, {
           applicationLanguage: state.appLanguage.state,
           applicationTheme: state.theme.state,
           proxyUrls: state.proxyUrls.state?.filter((v) => v !== "") ?? null,
-          febboxKey: state.febboxToken.state,
         });
       }
       if (state.deviceName.changed) {
@@ -286,7 +278,7 @@ export function SettingsPage() {
     setSubStyling(state.subtitleStyling.state);
     setProxySet(state.proxyUrls.state?.filter((v) => v !== "") ?? null);
     setEnableSourceOrder(state.enableSourceOrder.state);
-    setFebboxToken(state.febboxToken.state);
+
     setProxyTmdb(state.proxyTmdb.state);
 
     if (state.profile.state) {
@@ -308,7 +300,6 @@ export function SettingsPage() {
     account,
     backendUrl,
     setEnableThumbnails,
-    setFebboxToken,
     state,
     setEnableAutoplay,
     setEnableSkipCredits,
@@ -398,8 +389,6 @@ export function SettingsPage() {
             setBackendUrl={state.backendUrl.set}
             proxyUrls={state.proxyUrls.state}
             setProxyUrls={state.proxyUrls.set}
-            febboxToken={state.febboxToken.state}
-            setFebboxToken={state.febboxToken.set}
             proxyTmdb={state.proxyTmdb.state}
             setProxyTmdb={state.proxyTmdb.set}
           />

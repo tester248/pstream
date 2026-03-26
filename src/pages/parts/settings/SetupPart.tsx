@@ -27,6 +27,20 @@ type SetupData = {
   defaultProxy: Status;
 };
 
+const testUrl = "https://postman-echo.com/get";
+
+function testProxy(url: string) {
+  return new Promise<void>((resolve, reject) => {
+    setTimeout(() => reject(new Error("Timed out!")), 3000);
+    singularProxiedFetch(url, testUrl, {})
+      .then((res) => {
+        if (res.url !== testUrl) return reject(new Error("Not a proxy"));
+        resolve();
+      })
+      .catch(reject);
+  });
+}
+
 function useIsSetup() {
   const proxyUrls = useAuthStore((s) => s.proxySet);
   const { loading, value } = useAsync(async (): Promise<SetupData> => {
@@ -53,14 +67,12 @@ function useIsSetup() {
   let globalState: Status = "unset";
   if (
     value?.extension === "success" ||
-    value?.proxy === "success" ||
-    value?.febboxTokenTest === "success"
+    value?.proxy === "success"
   )
     globalState = "success";
   if (
     value?.proxy === "error" ||
-    value?.extension === "error" ||
-    value?.febboxTokenTest === "error"
+    value?.extension === "error"
   )
     globalState = "error";
 
@@ -189,11 +201,7 @@ export function SetupPart() {
           >
             {t("settings.connections.setup.items.default")}
           </SetupCheckList>
-          {conf().ALLOW_FEBBOX_KEY && (
-            <SetupCheckList status={setupStates.febboxTokenTest || "unset"}>
-              Febbox UI token
-            </SetupCheckList>
-          )}
+
         </div>
         <div className="md:mt-5">
           <Button theme="purple" onClick={() => navigate("/onboarding")}>

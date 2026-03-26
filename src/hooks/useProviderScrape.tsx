@@ -52,10 +52,10 @@ function useBaseScrape() {
               id: "febbox",
               name: "FED API (VIP)",
               type: "source",
-              mediaTypes: ["movie", "show"]
+              mediaTypes: ["movie", "show"],
             } as any;
           }
-          if (!source) throw new Error("invalid source id: " + v);
+          if (!source) throw new Error(`invalid source id: ${v}`);
           const out: ScrapingSegment = {
             name: source.name,
             id: source.id,

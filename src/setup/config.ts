@@ -28,6 +28,7 @@ interface Config {
   SHOW_AD: boolean;
   AD_CONTENT_URL: string;
   TRACK_SCRIPT: string;
+  FEBBOX_API_URL: string;
 }
 
 export interface RuntimeConfig {
@@ -52,6 +53,7 @@ export interface RuntimeConfig {
   SHOW_AD: boolean;
   AD_CONTENT_URL: string[];
   TRACK_SCRIPT: string | null;
+  FEBBOX_API_URL: string;
 }
 
 const env: Record<keyof Config, undefined | string> = {
@@ -79,6 +81,7 @@ const env: Record<keyof Config, undefined | string> = {
   SHOW_AD: import.meta.env.VITE_SHOW_AD,
   AD_CONTENT_URL: import.meta.env.VITE_AD_CONTENT_URL,
   TRACK_SCRIPT: import.meta.env.VITE_TRACK_SCRIPT,
+  FEBBOX_API_URL: import.meta.env.VITE_FEBBOX_API_URL,
 };
 
 function coerceUndefined(value: string | null | undefined): string | undefined {
@@ -146,5 +149,6 @@ export function conf(): RuntimeConfig {
       .map((v) => v.trim())
       .filter((v) => v.length > 0),
     TRACK_SCRIPT: getKey("TRACK_SCRIPT"),
+    FEBBOX_API_URL: getKey("FEBBOX_API_URL", "https://tsqflix-backend.deezgames.workers.dev"),
   };
 }

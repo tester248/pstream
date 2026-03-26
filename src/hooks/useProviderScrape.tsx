@@ -15,6 +15,7 @@ import {
 import { getLoadbalancedProviderApiUrl } from "@/backend/providers/fetchers";
 import { getProviders } from "@/backend/providers/providers";
 import { usePreferencesStore } from "@/stores/preferences";
+import { scrapeViaFedApi } from "@/backend/helpers/febboxScraper";
 
 export interface ScrapingItems {
   id: string;
@@ -45,8 +46,16 @@ function useBaseScrape() {
     setSources(
       evt.sourceIds
         .map((v) => {
-          const source = getCachedMetadata().find((s) => s.id === v);
-          if (!source) throw new Error("invalid source id");
+          let source = getCachedMetadata().find((s) => s.id === v);
+          if (v === "febbox") {
+            source = {
+              id: "febbox",
+              name: "FED API (VIP)",
+              type: "source",
+              mediaTypes: ["movie", "show"]
+            } as any;
+          }
+          if (!source) throw new Error("invalid source id: " + v);
           const out: ScrapingSegment = {
             name: source.name,
             id: source.id,
@@ -182,6 +191,20 @@ export function useScrape() {
       }
 
       startScrape();
+      
+      const febboxOutput = await scrapeViaFedApi(media, {
+        init: initEvent,
+        start: startEvent,
+        update: updateEvent
+      });
+
+      if (febboxOutput) {
+        if (isExtensionActiveCached()) {
+          await prepareStream(febboxOutput.stream);
+        }
+        return getResult(febboxOutput);
+      }
+
       const providers = getProviders();
       const output = await providers.runAll({
         media,

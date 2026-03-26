@@ -19,78 +19,14 @@ import { Heading3 } from "@/components/utils/Text";
 import { conf } from "@/setup/config";
 import { useAuthStore } from "@/stores/auth";
 
-const getRegion = async (): Promise<string | null> => {
-  if (typeof window === "undefined") return null;
-  try {
-    const regionData = window.localStorage.getItem("__MW::region");
-    if (!regionData) return null;
-    const parsed = JSON.parse(regionData);
-    return parsed?.state?.region || null;
-  } catch {
-    return null;
-  }
-};
-
-const getBaseUrl = async (): Promise<string> => {
-  const region = await getRegion();
-  switch (region) {
-    case "us-east":
-      return "https://fed-api-east.pstream.org";
-    case "us-west":
-      return "https://fed-api-west.pstream.org";
-    case "south":
-      return "https://fed-api-south.pstream.org";
-    case "asia":
-      return "https://fed-api-asia.pstream.org";
-    case "europe":
-      return "https://fed-api-europe.pstream.org";
-    case "unknown":
-      return "https://fed-api-east.pstream.org";
-    default:
-      return "";
-  }
-};
-
-const testUrl = "https://postman-echo.com/get";
-
-const sleep = (ms: number): Promise<void> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, ms);
-  });
-};
-
-export type Status = "success" | "unset" | "error";
-
-type SetupData = {
-  extension: Status;
-  proxy: Status;
-  defaultProxy: Status;
-  febboxTokenTest?: Status;
-};
-
-function testProxy(url: string) {
-  return new Promise<void>((resolve, reject) => {
-    setTimeout(() => reject(new Error("Timed out!")), 3000);
-    singularProxiedFetch(url, testUrl, {})
-      .then((res) => {
-        if (res.url !== testUrl) return reject(new Error("Not a proxy"));
-        resolve();
-      })
-      .catch(reject);
-  });
-}
-
 export async function testFebboxToken(
   febboxToken: string | null,
 ): Promise<Status> {
-  const BASE_URL = await getBaseUrl();
-  const febboxApiTestUrl = `${BASE_URL}/movie/tt13654226`;
-
   if (!febboxToken) {
     return "unset";
   }
+
+  const febboxApiTestUrl = `${conf().FEBBOX_API_URL}/api/febbox/stream?type=movie&title=Inception&releaseYear=2010`;
 
   let attempts = 0;
   const maxAttempts = 3;
@@ -102,7 +38,7 @@ export async function testFebboxToken(
     try {
       const response = await fetch(febboxApiTestUrl, {
         headers: {
-          "ui-token": febboxToken,
+          "x-auth-cookie": febboxToken,
         },
       });
 
@@ -119,7 +55,7 @@ export async function testFebboxToken(
       }
 
       const data = (await response.json()) as any;
-      if (!data || !data.streams) {
+      if (!data || !data.links || data.links.length === 0) {
         console.error("Invalid response format from Febbox API:", data);
         attempts += 1;
         if (attempts === maxAttempts) {
@@ -131,26 +67,8 @@ export async function testFebboxToken(
         continue;
       }
 
-      const isVIPLink = Object.values(data.streams).some((link: any) => {
-        if (typeof link === "string") {
-          return link.toLowerCase().includes("vip");
-        }
-        return false;
-      });
-
-      if (isVIPLink) {
-        console.log("VIP link found, returning success");
-        return "success";
-      }
-
-      console.log("No VIP link found in attempt", attempts + 1);
-      attempts += 1;
-      if (attempts === maxAttempts) {
-        console.log("Max attempts reached, returning error");
-        return "error";
-      }
-      console.log("Retrying after no VIP link found...");
-      await sleep(3000);
+      console.log("Valid links found, returning success");
+      return "success";
     } catch (error: any) {
       console.error("Error testing Febbox token:", error);
       attempts += 1;

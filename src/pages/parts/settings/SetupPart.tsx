@@ -162,8 +162,7 @@ export function SetupPart() {
         <div>
           <div
             className={classNames({
-              "rounded-full h-12 w-12 flex bg-opacity-15 justify-center items-center":
-                true,
+              "rounded-full h-12 w-12 flex bg-opacity-15 justify-center items-center": true,
               "text-type-success bg-type-success": globalState === "success",
               "text-type-danger bg-type-danger":
                 globalState === "error" || globalState === "unset",

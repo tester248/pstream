@@ -104,8 +104,7 @@ export function ScrapingPart(props: ScrapingProps) {
       ) : null}
       <div
         className={classNames({
-          "absolute transition-[transform,opacity] opacity-0 dir-neutral:left-0":
-            true,
+          "absolute transition-[transform,opacity] opacity-0 dir-neutral:left-0": true,
           "!opacity-100": renderedOnce,
         })}
         ref={listRef}

@@ -38,9 +38,8 @@
 ## Running Locally
 Type the following commands into your terminal / command line to run P-Stream locally
 ```bash
-git clone https://github.com/p-stream/p-stream.git
-cd smov
-git pull
+git clone https://github.com/tester248/pstream.git
+cd pstream
 pnpm install
 pnpm run dev
 ```
@@ -50,14 +49,9 @@ Then you can visit the local instance [here](http://localhost:5173) or, at local
 ## Updating a P-Stream Instance
 To update a P-Stream instance you can type the below commands into a terminal at the root of your project.
 ```bash
-git remote add upstream https://github.com/p-stream/p-stream.git
-git fetch upstream # Grab the contents of the new remote source
-git checkout <YOUR_MAIN_BRANCH>  # Most likely this would be `origin/production`
-git merge upstream/production
-# * Fix any conflicts present during merge *
-git add .  # Add all changes made during merge and conflict fixing
-git commit -m "Update p-stream instance (merge upstream/production)"
-git push  # Push to YOUR repository
+git pull
+pnpm install
+pnpm run build
 ```
 
 

@@ -149,9 +149,6 @@ export function conf(): RuntimeConfig {
       .map((v) => v.trim())
       .filter((v) => v.length > 0),
     TRACK_SCRIPT: getKey("TRACK_SCRIPT"),
-    FEBBOX_API_URL: getKey(
-      "FEBBOX_API_URL",
-      "https://tsqflix-backend.deezgames.workers.dev",
-    ),
+    FEBBOX_API_URL: getKey("FEBBOX_API_URL", ""),
   };
 }

@@ -1,4 +1,8 @@
-import { RunOutput, ScrapeMedia, FullScraperEvents } from "@movie-web/providers";
+import {
+  FullScraperEvents,
+  RunOutput,
+  ScrapeMedia,
+} from "@movie-web/providers";
 
 import { conf } from "@/setup/config";
 
@@ -8,7 +12,7 @@ export async function scrapeViaFedApi(
     init: NonNullable<FullScraperEvents["init"]>;
     start: NonNullable<FullScraperEvents["start"]>;
     update: NonNullable<FullScraperEvents["update"]>;
-  }
+  },
 ): Promise<RunOutput | null> {
   if (!conf().ALLOW_FEBBOX_KEY) return null;
 
@@ -19,14 +23,19 @@ export async function scrapeViaFedApi(
     if (events) {
       events.init({ sourceIds: ["febbox"] });
       events.start("febbox");
-      events.update({ id: "febbox", status: "pending", percentage: 0, reason: "Searching Febbox..." });
+      events.update({
+        id: "febbox",
+        status: "pending",
+        percentage: 0,
+        reason: "Searching Febbox...",
+      });
     }
 
     const url = new URL(`${apiUrl}/api/febbox/stream`);
     url.searchParams.set("type", media.type);
     url.searchParams.set("title", media.title);
     url.searchParams.set("releaseYear", media.releaseYear.toString());
-    
+
     if (media.tmdbId) url.searchParams.set("tmdbId", media.tmdbId.toString());
     if (media.imdbId) url.searchParams.set("imdbId", media.imdbId);
 
@@ -38,18 +47,30 @@ export async function scrapeViaFedApi(
     const response = await fetch(url.toString(), {
       method: "GET",
       // Ensure we don't cache this aggressively
-      cache: "no-store", 
+      cache: "no-store",
     });
 
     if (!response.ok) {
-        if (events) events.update({ id: "febbox", status: "notfound", percentage: 100, reason: `Failed with status ${response.status}` });
-        return null;
+      if (events)
+        events.update({
+          id: "febbox",
+          status: "notfound",
+          percentage: 100,
+          reason: `Failed with status ${response.status}`,
+        });
+      return null;
     }
 
     const data = await response.json();
     if (data.error || !data.links || data.links.length === 0) {
-        if (events) events.update({ id: "febbox", status: "notfound", percentage: 100, reason: data.error || "No links found" });
-        return null;
+      if (events)
+        events.update({
+          id: "febbox",
+          status: "notfound",
+          percentage: 100,
+          reason: data.error || "No links found",
+        });
+      return null;
     }
 
     const qualities: Record<string, any> = {};
@@ -73,11 +94,18 @@ export async function scrapeViaFedApi(
     });
 
     if (!hasLinks) {
-      if (events) events.update({ id: "febbox", status: "notfound", percentage: 100, reason: "No qualities found" });
+      if (events)
+        events.update({
+          id: "febbox",
+          status: "notfound",
+          percentage: 100,
+          reason: "No qualities found",
+        });
       return null;
     }
 
-    if (events) events.update({ id: "febbox", status: "success", percentage: 100 });
+    if (events)
+      events.update({ id: "febbox", status: "success", percentage: 100 });
 
     return {
       sourceId: "febbox",
@@ -92,7 +120,13 @@ export async function scrapeViaFedApi(
     };
   } catch (err: any) {
     console.error("Febbox scraper error:", err);
-    if (events) events.update({ id: "febbox", status: "failure", percentage: 100, error: err.message });
+    if (events)
+      events.update({
+        id: "febbox",
+        status: "failure",
+        percentage: 100,
+        error: err.message,
+      });
     return null;
   }
 }

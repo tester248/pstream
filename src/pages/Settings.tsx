@@ -30,7 +30,7 @@ import { DeviceListPart } from "@/pages/parts/settings/DeviceListPart";
 import { RegisterCalloutPart } from "@/pages/parts/settings/RegisterCalloutPart";
 import { SidebarPart } from "@/pages/parts/settings/SidebarPart";
 import { PageTitle } from "@/pages/parts/util/PageTitle";
-import { AccountWithToken, useAuthStore } from "@/stores/auth";
+import { Account, AccountWithToken, useAuthStore } from "@/stores/auth";
 import { useLanguageStore } from "@/stores/language";
 import { usePreferencesStore } from "@/stores/preferences";
 import { useSubtitleStore } from "@/stores/subtitles";
@@ -131,8 +131,6 @@ export function SettingsPage() {
   const backendUrlSetting = useAuthStore((s) => s.backendUrl);
   const setBackendUrl = useAuthStore((s) => s.setBackendUrl);
 
-
-
   const enableThumbnails = usePreferencesStore((s) => s.enableThumbnails);
   const setEnableThumbnails = usePreferencesStore((s) => s.setEnableThumbnails);
 
@@ -183,7 +181,7 @@ export function SettingsPage() {
       }
     };
     loadSettings();
-  }, [account, backendUrl, setFebboxToken]);
+  }, [account, backendUrl]);
 
   const state = useSettingsState(
     activeTheme,
@@ -191,15 +189,16 @@ export function SettingsPage() {
     subStyling,
     decryptedName,
     proxySet,
+    backendUrl,
     account ? account.profile : undefined,
     enableThumbnails,
     enableAutoplay,
+    enableSkipCredits,
     enableDiscover,
     enableDetailsModal,
     sourceOrder,
     enableSourceOrder,
     proxyTmdb,
-    enableSkipCredits,
   );
 
   const availableSources = useMemo(() => {
@@ -208,7 +207,9 @@ export function SettingsPage() {
     const stateSources = state.sourceOrder.state;
 
     // Filter out sources that are not in `stateSources` and are in `sources`
-    const updatedSources = stateSources.filter((ss) => sourceIDs.includes(ss));
+    const updatedSources = stateSources.filter((ss: string) =>
+      sourceIDs.includes(ss),
+    );
 
     // Add sources from `sources` that are not in `stateSources`
     const missingSources = sources
@@ -332,15 +333,21 @@ export function SettingsPage() {
               setDeviceName={state.deviceName.set}
               colorA={state.profile.state.colorA}
               setColorA={(v) => {
-                state.profile.set((s) => (s ? { ...s, colorA: v } : undefined));
+                state.profile.set((s: Account["profile"] | undefined) =>
+                  s ? { ...s, colorA: v } : undefined,
+                );
               }}
               colorB={state.profile.state.colorB}
               setColorB={(v) =>
-                state.profile.set((s) => (s ? { ...s, colorB: v } : undefined))
+                state.profile.set((s: Account["profile"] | undefined) =>
+                  s ? { ...s, colorB: v } : undefined,
+                )
               }
               userIcon={state.profile.state.icon as any}
               setUserIcon={(v) =>
-                state.profile.set((s) => (s ? { ...s, icon: v } : undefined))
+                state.profile.set((s: Account["profile"] | undefined) =>
+                  s ? { ...s, icon: v } : undefined,
+                )
               }
             />
           ) : (

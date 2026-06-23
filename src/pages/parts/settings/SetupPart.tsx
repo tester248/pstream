@@ -65,15 +65,9 @@ function useIsSetup() {
   }, [proxyUrls]);
 
   let globalState: Status = "unset";
-  if (
-    value?.extension === "success" ||
-    value?.proxy === "success"
-  )
+  if (value?.extension === "success" || value?.proxy === "success")
     globalState = "success";
-  if (
-    value?.proxy === "error" ||
-    value?.extension === "error"
-  )
+  if (value?.proxy === "error" || value?.extension === "error")
     globalState = "error";
 
   return {
@@ -201,7 +195,6 @@ export function SetupPart() {
           >
             {t("settings.connections.setup.items.default")}
           </SetupCheckList>
-
         </div>
         <div className="md:mt-5">
           <Button theme="purple" onClick={() => navigate("/onboarding")}>

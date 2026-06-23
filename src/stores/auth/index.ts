@@ -22,6 +22,7 @@ interface AuthStore {
   account: null | AccountWithToken;
   backendUrl: null | string;
   proxySet: null | string[];
+  febboxToken: null | string;
   removeAccount(): void;
   setAccount(acc: AccountWithToken): void;
   updateDeviceName(deviceName: string): void;
@@ -29,6 +30,7 @@ interface AuthStore {
   setAccountProfile(acc: Account["profile"]): void;
   setBackendUrl(url: null | string): void;
   setProxySet(urls: null | string[]): void;
+  setFebboxToken(token: null | string): void;
 }
 
 export const useAuthStore = create(
@@ -37,6 +39,7 @@ export const useAuthStore = create(
       account: null,
       backendUrl: null,
       proxySet: null,
+      febboxToken: null,
       setAccount(acc) {
         set((s) => {
           s.account = acc;
@@ -78,6 +81,11 @@ export const useAuthStore = create(
         set((s) => {
           if (!s.account) return;
           s.account.deviceName = deviceName;
+        });
+      },
+      setFebboxToken(token) {
+        set((s) => {
+          s.febboxToken = token;
         });
       },
     })),

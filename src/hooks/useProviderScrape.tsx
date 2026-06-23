@@ -7,6 +7,7 @@ import { RefObject, useCallback, useEffect, useRef, useState } from "react";
 
 import { isExtensionActiveCached } from "@/backend/extension/messaging";
 import { prepareStream } from "@/backend/extension/streams";
+import { scrapeViaFedApi } from "@/backend/helpers/febboxScraper";
 import {
   connectServerSideEvents,
   getCachedMetadata,
@@ -15,7 +16,6 @@ import {
 import { getLoadbalancedProviderApiUrl } from "@/backend/providers/fetchers";
 import { getProviders } from "@/backend/providers/providers";
 import { usePreferencesStore } from "@/stores/preferences";
-import { scrapeViaFedApi } from "@/backend/helpers/febboxScraper";
 
 export interface ScrapingItems {
   id: string;
@@ -191,11 +191,11 @@ export function useScrape() {
       }
 
       startScrape();
-      
+
       const febboxOutput = await scrapeViaFedApi(media, {
         init: initEvent,
         start: startEvent,
-        update: updateEvent
+        update: updateEvent,
       });
 
       if (febboxOutput) {

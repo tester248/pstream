@@ -19,9 +19,8 @@ import { MwLink } from "@/components/text/Link";
 import { AuthInputBox } from "@/components/text-inputs/AuthInputBox";
 import { Divider } from "@/components/utils/Divider";
 import { Heading1 } from "@/components/utils/Text";
-import {
-  SetupPart,
-} from "@/pages/parts/settings/SetupPart";
+import { SetupPart } from "@/pages/parts/settings/SetupPart";
+import { useAuthStore } from "@/stores/auth";
 
 interface ProxyEditProps {
   proxyUrls: string[] | null;
@@ -211,11 +210,7 @@ function BackendEdit({ backendUrl, setBackendUrl }: BackendEditProps) {
   );
 }
 
-import { useAuthStore } from "@/stores/auth";
-
-export function ConnectionsPart(
-  props: BackendEditProps & ProxyEditProps,
-) {
+export function ConnectionsPart(props: BackendEditProps & ProxyEditProps) {
   const { t } = useTranslation();
   return (
     <div>

@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 
+import { Account } from "@/stores/auth";
 import { SubtitleStyling } from "@/stores/subtitles";
 import { usePreviewThemeStore } from "@/stores/theme";
 
@@ -43,7 +44,15 @@ export function useSettingsState(
   deviceName: string,
   proxyUrls: string[] | null,
   backendUrl: string | null,
+  profile: Account["profile"] | undefined,
+  enableThumbnails: boolean,
+  enableAutoplay: boolean,
   enableSkipCredits: boolean,
+  enableDiscover: boolean,
+  enableDetailsModal: boolean,
+  sourceOrder: string[],
+  enableSourceOrder: boolean,
+  proxyTmdb: boolean,
 ) {
   const [proxyUrlsState, setProxyUrls, resetProxyUrls, proxyUrlsChanged] =
     useDerived(proxyUrls);
@@ -144,7 +153,6 @@ export function useSettingsState(
     deviceNameChanged ||
     backendUrlChanged ||
     proxyUrlsChanged ||
-
     profileChanged ||
     enableThumbnailsChanged ||
     enableAutoplayChanged ||

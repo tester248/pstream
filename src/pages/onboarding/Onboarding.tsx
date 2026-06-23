@@ -106,7 +106,7 @@ export function OnboardingPage() {
             If you have more questions on how this works, feel free to ask on
             the{" "}
             <a
-              href="https://discord.com/invite/7z6znYgrTG"
+              href="https://discord.gg/MnYtkvh9zg"
               target="_blank"
               rel="noopener noreferrer"
               className="text-type-link"

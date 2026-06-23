@@ -178,7 +178,7 @@ export function HomePage() {
               transition! If you have questions or need help, feel free to reach
               out on the{" "}
               <a
-                href="https://discord.com/invite/7z6znYgrTG"
+                href="https://discord.gg/MnYtkvh9zg"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-type-link"

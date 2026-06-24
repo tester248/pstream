@@ -105,10 +105,14 @@ export function AccountSettings(props: {
 export function SettingsPage() {
   useEffect(() => {
     const hash = window.location.hash;
-    if (hash) {
-      const element = document.querySelector(hash);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
+    if (hash && !hash.includes("/")) {
+      try {
+        const element = document.querySelector(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      } catch {
+        // hash is not a valid CSS selector (e.g. HashRouter routes like "#/settings")
       }
     }
   }, []);
